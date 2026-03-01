@@ -66,6 +66,7 @@ soccer-quant/
 │   ├── import_data.py  # download datasets via kagglehub
 │   ├── features.py     # feature engineering (rolling xG, form, etc.)
 │   ├── train.py        # train logistic regression models
+│   ├── dashboard.py    # interactive Plotly Dash dashboard
 │   ├── qualitative.py  # LLM-powered news analysis (planned)
 │   └── predict.py      # generate predictions + find value bets (planned)
 ├── notebooks/          # exploratory data analysis
@@ -88,6 +89,7 @@ Data is imported using [`kagglehub`](https://github.com/Kaggle/kagglehub) — se
 - [x] Data import pipeline (`scripts/import_data.py`)
 - [x] Feature engineering — 12 rolling features from xG data (`scripts/features.py`)
 - [x] Logistic regression baseline — match outcome (51.2%) and over/under 2.5 goals (59.4%) (`scripts/train.py`)
+- [x] Interactive dashboard — feature importance, rolling form, match predictions, confusion matrix (`scripts/dashboard.py`)
 - [ ] Qualitative model (LLM news analysis)
 - [ ] Combined prediction + value bet detection
 
