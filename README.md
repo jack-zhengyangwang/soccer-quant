@@ -78,7 +78,8 @@ soccer-quant/
 | Dataset | Source | Coverage | Used For |
 |---------|--------|----------|----------|
 | [EPL Match Data 2000-2025](https://www.kaggle.com/datasets/marcohuiii/english-premier-league-epl-match-data-2000-2025) | football-data.co.uk via Kaggle | 9,380 matches, 25 seasons | Match results, shots, corners, cards |
-| [Premier League Team Stats 2016-2025](https://www.kaggle.com/datasets/danielijezie/premier-league-data-from-2016-to-2024) | premierleague.com via Kaggle | 180 team-seasons, 9 seasons | xG, advanced team stats, gameweek tables |
+| [Premier League Matches with xG 2021-2025](https://www.kaggle.com/datasets/armin2080/premier-league-matches-dataset-2021-to-2025) | FBref via Kaggle | 3,800 matches, 5 seasons | Match-level xG, xGA, possession, formation |
+| [Premier League Team Stats 2016-2025](https://www.kaggle.com/datasets/danielijezie/premier-league-data-from-2016-to-2024) | premierleague.com via Kaggle | 180 team-seasons, 9 seasons | Season-level xG, advanced team stats |
 
 Data is imported using [`kagglehub`](https://github.com/Kaggle/kagglehub) — see `scripts/import_data.py`.
 

@@ -24,6 +24,18 @@ def download_match_results():
     return path
 
 
+def download_match_xg():
+    """
+    Download Premier League match-level xG data (2021-2025).
+    Source: FBref via Kaggle.
+    Contains: xG, xGA, possession, shots, formation per match.
+    """
+    print("Downloading match-level xG data (2021-2025)...")
+    path = kagglehub.dataset_download("armin2080/premier-league-matches-dataset-2021-to-2025")
+    print(f"Downloaded to: {path}")
+    return path
+
+
 def download_team_stats():
     """
     Download Premier League team stats (2016-2025).
@@ -59,6 +71,19 @@ def load_match_results(path):
     combined = pd.concat(dfs, ignore_index=True)
     print(f"Loaded {len(combined)} matches from {len(dfs)} file(s)")
     return combined
+
+
+def load_match_xg(path):
+    """Load match-level xG data from FBref dataset."""
+    csv_files = glob.glob(os.path.join(path, "**/*.csv"), recursive=True)
+
+    if not csv_files:
+        print("No CSV files found!")
+        return None
+
+    df = pd.read_csv(csv_files[0])
+    print(f"Loaded {len(df)} match records with xG data")
+    return df
 
 
 def load_season_stats(path):
@@ -102,14 +127,20 @@ def inspect_dataframe(df, name="DataFrame"):
 
 
 if __name__ == "__main__":
-    # Download both datasets
+    # Download all datasets
     match_path = download_match_results()
+    xg_path = download_match_xg()
     stats_path = download_team_stats()
 
     # Load match results
     matches = load_match_results(match_path)
     if matches is not None:
         inspect_dataframe(matches, "MATCH RESULTS (2000-2025)")
+
+    # Load match-level xG data
+    match_xg = load_match_xg(xg_path)
+    if match_xg is not None:
+        inspect_dataframe(match_xg, "MATCH-LEVEL xG (2021-2025, FBref)")
 
     # Load season stats (xG, shots, etc.)
     season_stats = load_season_stats(stats_path)
@@ -126,5 +157,9 @@ if __name__ == "__main__":
             print(f"  Seasons: {matches['Season'].nunique()} ({matches['Season'].min()} to {matches['Season'].max()})")
         if "HomeTeam" in matches.columns:
             print(f"  Teams: {matches['HomeTeam'].nunique()}")
+    if match_xg is not None:
+        print(f"  Match xG: {match_xg.shape[0]} records, {match_xg.shape[1]} columns")
+        if "season" in match_xg.columns:
+            print(f"  Seasons: {match_xg['season'].nunique()} ({match_xg['season'].min()} to {match_xg['season'].max()})")
     if season_stats is not None:
         print(f"  Season stats: {season_stats.shape[0]} team-seasons, {season_stats.shape[1]} columns")
