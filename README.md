@@ -63,11 +63,11 @@ soccer-quant/
 ├── data/               # raw + processed datasets
 ├── models/             # trained model files
 ├── scripts/
-│   ├── scrape.py       # collect match & news data
-│   ├── features.py     # feature engineering
-│   ├── train.py        # train ML models
-│   ├── qualitative.py  # LLM-powered news analysis
-│   └── predict.py      # generate predictions + find value bets
+│   ├── import_data.py  # download datasets via kagglehub
+│   ├── features.py     # feature engineering (rolling xG, form, etc.)
+│   ├── train.py        # train logistic regression models
+│   ├── qualitative.py  # LLM-powered news analysis (planned)
+│   └── predict.py      # generate predictions + find value bets (planned)
 ├── notebooks/          # exploratory data analysis
 ├── config.py           # league settings, bankroll allocation
 └── README.md
@@ -85,7 +85,11 @@ Data is imported using [`kagglehub`](https://github.com/Kaggle/kagglehub) — se
 
 ## Status
 
-Work in progress — currently building the quantitative model.
+- [x] Data import pipeline (`scripts/import_data.py`)
+- [x] Feature engineering — 12 rolling features from xG data (`scripts/features.py`)
+- [x] Logistic regression baseline — match outcome (51.2%) and over/under 2.5 goals (59.4%) (`scripts/train.py`)
+- [ ] Qualitative model (LLM news analysis)
+- [ ] Combined prediction + value bet detection
 
 ## Disclaimer
 
