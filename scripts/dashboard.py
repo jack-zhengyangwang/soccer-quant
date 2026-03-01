@@ -176,6 +176,44 @@ app.layout = html.Div([
     # Prediction cards
     html.Div(id="prediction-cards", style={"padding": "0 24px 16px", "textAlign": "center"}),
 
+    # Stat glossary
+    html.Div([
+        html.Details([
+            html.Summary("What do these stats mean?", style={
+                "cursor": "pointer", "fontWeight": "bold", "color": "#555",
+                "fontSize": "0.95em",
+            }),
+            html.Div([
+                html.Div([
+                    html.Span("xG", style={"fontWeight": "bold"}),
+                    " (Expected Goals) — Average goal-scoring quality of shots taken. "
+                    "Higher means more dangerous chances created.",
+                ], style={"marginBottom": "6px"}),
+                html.Div([
+                    html.Span("xGA", style={"fontWeight": "bold"}),
+                    " (Expected Goals Against) — Average quality of shots conceded. "
+                    "Lower means a stronger defence.",
+                ], style={"marginBottom": "6px"}),
+                html.Div([
+                    html.Span("Points", style={"fontWeight": "bold"}),
+                    " — Average league points per match (3 for a win, 1 for a draw). "
+                    "Captures recent form regardless of underlying metrics.",
+                ], style={"marginBottom": "6px"}),
+                html.Div([
+                    html.Span("Poss%", style={"fontWeight": "bold"}),
+                    " (Possession) — Share of total match possession. "
+                    "Indicates control of the game tempo.",
+                ], style={"marginBottom": "6px"}),
+                html.Div([
+                    html.Span("SoT Ratio", style={"fontWeight": "bold"}),
+                    " (Shots on Target Ratio) — Proportion of shots that hit the target. "
+                    "Reflects shooting accuracy and finishing quality.",
+                ]),
+            ], style={"padding": "10px 0 4px", "color": "#666",
+                       "fontSize": "0.88em", "lineHeight": "1.6"}),
+        ]),
+    ], style={"padding": "0 28px 12px"}),
+
     # Charts row: Radar + Stat comparison
     html.Div([
         html.Div(dcc.Graph(id="radar-chart"),
