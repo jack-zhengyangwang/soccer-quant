@@ -2,6 +2,7 @@
 
 from urllib.parse import urlencode
 
+import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc, html
 from plotly.subplots import make_subplots
@@ -224,7 +225,7 @@ def make_stat_chart(home_team, away_team, home_stats, away_stats):
         fig.add_trace(go.Bar(
             x=[h_pct], y=[label], orientation="h", name=home_team,
             marker_color=home_color, showlegend=(i == 0),
-            text=f"{home_team}  {hv:.2f}",
+            text=f"  {home_team}  {hv:.2f}",
             textposition="inside", insidetextanchor="start",
             textfont=dict(color="#fff", size=13, family="Inter, sans-serif"),
             legendgroup="home",
@@ -233,25 +234,39 @@ def make_stat_chart(home_team, away_team, home_stats, away_stats):
         fig.add_trace(go.Bar(
             x=[a_pct], y=[label], orientation="h", name=away_team,
             marker_color=away_color, showlegend=(i == 0),
-            text=f"{av:.2f}  {away_team}",
-            textposition="inside", insidetextanchor="end",
+            text=f"  {away_team}  {av:.2f}",
+            textposition="inside", insidetextanchor="start",
             textfont=dict(color="#fff", size=13, family="Inter, sans-serif"),
             legendgroup="away",
         ), row=row, col=1)
 
         fig.update_yaxes(
-            showticklabels=True, row=row, col=1,
-            tickfont=dict(color="#ccc", size=13),
+            showticklabels=False, row=row, col=1,
             gridcolor="rgba(0,0,0,0)",
         )
         fig.update_xaxes(
             visible=False, range=[0, 100], row=row, col=1,
         )
 
+    # Left-aligned stat labels as annotations
+    n = len(stat_labels)
+    for i, label in enumerate(stat_labels):
+        # Each subplot occupies an equal vertical band; compute its midpoint
+        row_h = 1.0 / n
+        y_mid = 1.0 - (i + 0.5) * row_h
+        fig.add_annotation(
+            text=f"<b>{label}</b>",
+            xref="paper", yref="paper",
+            x=-0.18, y=y_mid,
+            xanchor="left", yanchor="middle",
+            showarrow=False,
+            font=dict(color="#ccc", size=14, family="Inter, sans-serif"),
+        )
+
     fig.update_layout(
         title="Stat Comparison (5-match rolling)",
         barmode="stack",
-        height=50 + 70 * len(stat_labels),
+        height=50 + 80 * n,
         showlegend=False,
         margin=dict(l=100, r=20, t=50, b=20),
         **DARK_CHART_LAYOUT,
@@ -350,6 +365,11 @@ def make_h2h_panel(home_team, away_team):
         date_str = r["date"].strftime("%d %b %Y")
         ht, at = r["HomeTeam"], r["AwayTeam"]
 
+        # Score: gf/ga are from the home team's perspective
+        home_goals = int(r["gf"]) if pd.notna(r.get("gf")) else "?"
+        away_goals = int(r["ga"]) if pd.notna(r.get("ga")) else "?"
+        score_str = f"{home_goals} - {away_goals}"
+
         if r["outcome"] == 1:
             res = "D"
         elif (r["outcome"] == 0 and r["HomeTeam"] == home_team) or \
@@ -375,9 +395,9 @@ def make_h2h_panel(home_team, away_team):
                 "flex": "1", "display": "flex", "alignItems": "center",
                 "justifyContent": "flex-end",
             }),
-            html.Span("vs", style={
-                "flex": "0 0 36px", "textAlign": "center",
-                "color": "#555", "fontSize": "0.8em",
+            html.Span(score_str, style={
+                "flex": "0 0 56px", "textAlign": "center",
+                "color": "#fff", "fontWeight": "bold", "fontSize": "0.85em",
             }),
             html.Div([
                 html.Img(src=at_badge, style=small_badge) if at_badge else None,
@@ -489,6 +509,150 @@ def make_fixture_row(fixture, prediction):
         href=href,
         style={"textDecoration": "none"},
     )
+
+
+# ---------------------------------------------------------------------------
+# News panel
+# ---------------------------------------------------------------------------
+
+_SECTION_META = {
+    "injury": {"label": "Injury Updates", "icon": "\U0001f3e5", "color": "#e74c3c"},
+    "team_report": {"label": "Team Report", "icon": "\U0001f4cb", "color": "#3498db"},
+    "sentiment": {"label": "Sentiment", "icon": "\U0001f4ca", "color": "#2ecc71"},
+    "tactical": {"label": "Tactical Preview", "icon": "\u2694\ufe0f", "color": "#f39c12"},
+}
+
+_SECTION_ORDER = ["injury", "team_report", "sentiment", "tactical"]
+
+
+def _make_source_links(sources):
+    """Render a list of clickable source links."""
+    if not sources:
+        return None
+    links = []
+    for s in sources[:3]:
+        links.append(html.A(
+            s.get("title", "Source")[:50],
+            href=s.get("url", "#"),
+            target="_blank",
+            rel="noopener noreferrer",
+            style={
+                "color": "#6c63ff", "fontSize": "0.8em",
+                "textDecoration": "none", "marginRight": "12px",
+            },
+        ))
+    return html.Div(links, style={"marginTop": "6px"})
+
+
+def _make_section(key, bullets):
+    """Render one subsection (e.g. Injury Updates) with its bullets."""
+    meta = _SECTION_META.get(key, {"label": key, "icon": "", "color": "#888"})
+
+    if not bullets:
+        return html.Div([
+            html.Div([
+                html.Span(f"{meta['icon']} ", style={"marginRight": "4px"}),
+                html.Span(meta["label"], style={
+                    "fontWeight": "600", "color": meta["color"],
+                }),
+            ], style={"marginBottom": "6px"}),
+            html.P("No updates available.", style={
+                "color": "#555", "fontStyle": "italic",
+                "fontSize": "0.85em", "margin": "0 0 0 4px",
+            }),
+        ], className="news-section", style={"marginBottom": "16px"})
+
+    items = []
+    for b in bullets:
+        detail_children = [b.get("detail", "")]
+        source_links = _make_source_links(b.get("sources", []))
+        if source_links:
+            detail_children.append(source_links)
+
+        items.append(
+            html.Details([
+                html.Summary(b.get("headline", "")),
+                html.Div(
+                    detail_children,
+                    style={
+                        "padding": "6px 0 8px 20px", "color": "#999",
+                        "fontSize": "0.88em", "lineHeight": "1.6",
+                    },
+                ),
+            ], className="news-item")
+        )
+
+    return html.Div([
+        html.Div([
+            html.Span(f"{meta['icon']} ", style={"marginRight": "4px"}),
+            html.Span(meta["label"], style={
+                "fontWeight": "600", "color": meta["color"],
+            }),
+        ], style={"marginBottom": "6px"}),
+        html.Div(items),
+    ], className="news-section", style={"marginBottom": "16px"})
+
+
+def make_news_panel(news_data):
+    """Render the News & Updates panel with 4 subsections and source links."""
+    source = news_data.get("source", "unavailable")
+    sections = news_data.get("sections", {})
+    fetched_at = news_data.get("fetched_at", "")
+
+    if source == "unavailable" or not sections:
+        return html.Div([
+            html.H3("News & Updates", style={
+                "color": "#e0e0e0", "marginTop": "0",
+                "marginBottom": "12px", "fontSize": "1.1em",
+            }),
+            html.P(
+                "News unavailable \u2014 set TAVILY_API_KEY and ANTHROPIC_API_KEY "
+                "to enable live updates.",
+                style={
+                    "color": "#666", "fontStyle": "italic",
+                    "textAlign": "center", "padding": "20px 0",
+                },
+            ),
+        ], className="news-panel", style={
+            "background": "#1e1e2f", "borderRadius": "12px",
+            "padding": "20px 24px", "marginBottom": "16px",
+            "boxShadow": "0 4px 20px rgba(0,0,0,0.4)",
+        })
+
+    section_divs = [
+        _make_section(key, sections.get(key, []))
+        for key in _SECTION_ORDER
+    ]
+
+    # Timestamp footer
+    footer_parts = []
+    if fetched_at:
+        try:
+            from datetime import datetime
+            ts = datetime.fromisoformat(fetched_at)
+            footer_parts.append(ts.strftime("%d %b %Y, %H:%M UTC"))
+        except (ValueError, TypeError):
+            pass
+    if source == "cache":
+        footer_parts.append("cached")
+
+    footer_text = " \u2022 ".join(footer_parts) if footer_parts else ""
+
+    return html.Div([
+        html.H3("News & Updates", style={
+            "color": "#e0e0e0", "marginTop": "0",
+            "marginBottom": "16px", "fontSize": "1.1em",
+        }),
+        html.Div(section_divs),
+        html.Div(footer_text, style={
+            "color": "#555", "fontSize": "0.75em",
+            "textAlign": "right", "marginTop": "8px",
+        }) if footer_text else None,
+    ], className="news-panel", style={
+        "background": "#1e1e2f", "borderRadius": "12px",
+        "padding": "20px 24px", "marginBottom": "16px",
+        "boxShadow": "0 4px 20px rgba(0,0,0,0.4)",
+    })
 
 
 # ---------------------------------------------------------------------------

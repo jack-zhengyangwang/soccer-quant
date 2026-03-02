@@ -189,7 +189,7 @@ def main():
         "home_rolling_sot_ratio", "away_rolling_sot_ratio",
         "xg_diff", "xga_diff",
     ]
-    meta_cols = ["date", "season", "HomeTeam", "AwayTeam"]
+    meta_cols = ["date", "season", "HomeTeam", "AwayTeam", "gf", "ga"]
     target_cols = ["outcome", "over_2_5"]
 
     output = matches[meta_cols + feature_cols + target_cols].copy()

@@ -26,10 +26,12 @@ from components import (
     make_form_badges,
     make_h2h_panel,
     make_header,
+    make_news_panel,
     make_prediction_cards,
     make_stat_chart,
     make_stat_glossary,
 )
+from qualitative import get_match_news, get_news_highlights
 
 # ---------------------------------------------------------------------------
 # Dash app
@@ -171,6 +173,10 @@ def match_detail_layout(home_team, away_team):
         home_team, away_team, home_stats, away_stats,
     )
     insights = generate_insights(home_team, away_team)
+    news_data = get_match_news(home_team, away_team)
+    news_highlights = get_news_highlights(news_data)
+    if news_highlights:
+        insights = insights + news_highlights
     stat_fig = make_stat_chart(home_team, away_team, home_stats, away_stats)
     h2h_panel = make_h2h_panel(home_team, away_team)
 
@@ -187,102 +193,143 @@ def match_detail_layout(home_team, away_team):
         header,
         back,
 
+        # Matchup header + prediction + form
         html.Div([
             html.Div([
-                html.Div([
-                    html.H2(f"{home_team} vs {away_team}", style={
-                        "margin": "0 0 8px", "color": "#e0e0e0",
-                        "fontSize": "1.5em",
-                    }),
-                    html.Div([
-                        html.Span(kickoff_str, style={
-                            "color": "#888", "fontSize": "0.9em",
-                        }) if kickoff_str else None,
-                        html.Span(f"  \u2022  {gw_str}", style={
-                            "color": "#888", "fontSize": "0.9em",
-                        }) if gw_str else None,
-                    ], style={"marginBottom": "20px"}),
-                ], style={"padding": "0 0 8px"}),
-
-                html.Div(pred_cards, style={
-                    "textAlign": "center", "marginBottom": "24px",
+                html.H2(f"{home_team} vs {away_team}", style={
+                    "margin": "0 0 8px", "color": "#e0e0e0",
+                    "fontSize": "1.5em",
                 }),
-
                 html.Div([
-                    html.Div([
-                        html.Span(f"{home_team}:", style={
-                            "color": "#aaa", "fontSize": "0.85em",
-                            "display": "inline-block", "width": "140px",
-                            "textAlign": "right", "marginRight": "12px",
-                        }),
-                        make_form_badges(home_team),
-                    ], style={
-                        "display": "flex", "alignItems": "center",
-                        "marginBottom": "8px",
-                    }),
-                    html.Div([
-                        html.Span(f"{away_team}:", style={
-                            "color": "#aaa", "fontSize": "0.85em",
-                            "display": "inline-block", "width": "140px",
-                            "textAlign": "right", "marginRight": "12px",
-                        }),
-                        make_form_badges(away_team),
-                    ], style={
-                        "display": "flex", "alignItems": "center",
-                    }),
-                ], style={
-                    "background": "#1e1e2f", "borderRadius": "12px",
-                    "padding": "16px 20px", "marginBottom": "16px",
-                }),
-            ], className="detail-left", style={
-                "flex": "1", "minWidth": "0", "padding": "0 8px",
+                    html.Span(kickoff_str, style={
+                        "color": "#888", "fontSize": "0.9em",
+                    }) if kickoff_str else None,
+                    html.Span(f"  \u2022  {gw_str}", style={
+                        "color": "#888", "fontSize": "0.9em",
+                    }) if gw_str else None,
+                ], style={"marginBottom": "20px"}),
+            ], style={"padding": "0 0 8px"}),
+
+            html.Div(pred_cards, style={
+                "textAlign": "center", "marginBottom": "24px",
             }),
 
             html.Div([
                 html.Div([
-                    html.H3("Key Insights", style={
-                        "color": "#e0e0e0", "marginTop": "0",
-                        "marginBottom": "12px", "fontSize": "1.1em",
+                    html.Span(f"{home_team}:", style={
+                        "color": "#aaa", "fontSize": "0.85em",
+                        "display": "inline-block", "width": "140px",
+                        "textAlign": "right", "marginRight": "12px",
                     }),
-                    html.Ul([
-                        html.Li(insight, style={
-                            "color": "#ccc", "marginBottom": "8px",
-                            "fontSize": "0.9em", "lineHeight": "1.5",
-                        })
-                        for insight in insights
-                    ], style={"paddingLeft": "18px", "margin": "0"}),
-                ], className="insights-panel", style={
-                    "background": "#1e1e2f", "borderRadius": "12px",
-                    "padding": "20px 24px", "marginBottom": "16px",
-                    "boxShadow": "0 4px 20px rgba(0,0,0,0.4)",
+                    make_form_badges(home_team),
+                ], style={
+                    "display": "flex", "alignItems": "center",
+                    "marginBottom": "8px",
                 }),
-
                 html.Div([
-                    html.H3("News & Updates", style={
-                        "color": "#bbb", "marginTop": "0",
+                    html.Span(f"{away_team}:", style={
+                        "color": "#aaa", "fontSize": "0.85em",
+                        "display": "inline-block", "width": "140px",
+                        "textAlign": "right", "marginRight": "12px",
+                    }),
+                    make_form_badges(away_team),
+                ], style={
+                    "display": "flex", "alignItems": "center",
+                }),
+            ], style={
+                "background": "#1e1e2f", "borderRadius": "12px",
+                "padding": "16px 20px", "marginBottom": "16px",
+            }),
+        ], style={"padding": "0 32px 24px"}),
+
+        # Key Highlights + News & Updates side by side
+        html.Div([
+            # Key Highlights — 3 sub-boxes
+            html.Div([
+                html.H3("Key Highlights", style={
+                    "color": "#e0e0e0", "marginTop": "0",
+                    "marginBottom": "16px", "fontSize": "1.1em",
+                }),
+                # Top row: Key Stats (left) + Key News (right)
+                html.Div([
+                    html.Div([
+                        html.H4("Key Stats", style={
+                            "color": "#6c63ff", "margin": "0 0 10px",
+                            "fontSize": "0.9em", "fontWeight": "600",
+                        }),
+                        html.Ul([
+                            html.Li(ins, style={
+                                "color": "#ccc", "marginBottom": "6px",
+                                "fontSize": "0.85em", "lineHeight": "1.5",
+                            })
+                            for ins in insights
+                        ], style={"paddingLeft": "16px", "margin": "0"}),
+                    ], className="insights-panel", style={
+                        "background": "#151524", "borderRadius": "10px",
+                        "padding": "14px 18px", "flex": "1", "minWidth": "0",
+                    }),
+                    html.Div([
+                        html.H4("Key News", style={
+                            "color": "#2ecc71", "margin": "0 0 10px",
+                            "fontSize": "0.9em", "fontWeight": "600",
+                        }),
+                        html.Ul([
+                            html.Li(h, style={
+                                "color": "#ccc", "marginBottom": "6px",
+                                "fontSize": "0.85em", "lineHeight": "1.5",
+                            })
+                            for h in news_highlights
+                        ], style={"paddingLeft": "16px", "margin": "0"})
+                        if news_highlights else
+                        html.P("No news highlights yet.", style={
+                            "color": "#555", "fontStyle": "italic",
+                            "fontSize": "0.85em", "margin": "0",
+                        }),
+                    ], style={
+                        "background": "#151524", "borderRadius": "10px",
+                        "padding": "14px 18px", "flex": "1", "minWidth": "0",
+                    }),
+                ], style={
+                    "display": "flex", "gap": "12px", "marginBottom": "12px",
+                }),
+                # Bottom box: Betting Suggestion
+                html.Div([
+                    html.H4("Betting Suggestion", style={
+                        "color": "#f39c12", "margin": "0 0 10px",
+                        "fontSize": "0.9em", "fontWeight": "600",
                     }),
                     html.P("Coming soon...", style={
-                        "color": "#666", "fontStyle": "italic",
-                        "textAlign": "center", "padding": "20px 0",
+                        "color": "#555", "fontStyle": "italic",
+                        "fontSize": "0.85em", "margin": "0",
                     }),
                 ], style={
-                    "border": "2px dashed #444", "borderRadius": "12px",
-                    "padding": "20px 24px",
+                    "background": "#151524", "borderRadius": "10px",
+                    "padding": "14px 18px",
                 }),
-            ], className="detail-right", style={
-                "flex": "1", "minWidth": "0", "padding": "0 8px",
+            ], style={
+                "background": "#1e1e2f", "borderRadius": "12px",
+                "padding": "20px 24px",
+                "boxShadow": "0 4px 20px rgba(0,0,0,0.4)",
+                "flex": "1", "minWidth": "0",
             }),
+            # News & Updates panel
+            html.Div(
+                make_news_panel(news_data),
+                style={"flex": "1", "minWidth": "0"},
+            ),
         ], className="detail-top-row", style={
             "display": "flex", "gap": "16px", "padding": "0 32px 24px",
+            "alignItems": "flex-start",
         }),
 
+        # H2H + Stat chart side by side
         html.Div([
             html.Div(
-                html.Div(dcc.Graph(figure=stat_fig), style=CHART_CARD_STYLE),
+                html.Div(h2h_panel, style=CHART_CARD_STYLE),
                 style={"flex": "1", "minWidth": "0"},
             ),
             html.Div(
-                html.Div(h2h_panel, style=CHART_CARD_STYLE),
+                html.Div(dcc.Graph(figure=stat_fig), style=CHART_CARD_STYLE),
                 style={"flex": "1", "minWidth": "0"},
             ),
         ], style={"display": "flex", "gap": "16px", "padding": "0 32px 24px"}),

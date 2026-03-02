@@ -6,3 +6,4 @@ models/*.pkl
 models/*.joblib
 .env
 *.sqlite
+data/news_cache/
