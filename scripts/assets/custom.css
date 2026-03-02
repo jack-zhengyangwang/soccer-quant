@@ -194,48 +194,6 @@ body {
 }
 
 /* ============================================================
-   Legacy react-select classes (fallback)
-   ============================================================ */
-.Select-control {
-    background-color: #1e1e2f !important;
-    border: 1px solid #3a3a5c !important;
-    border-radius: 10px !important;
-    color: #e0e0e0 !important;
-}
-
-.Select-control:hover {
-    border-color: #5a5a8a !important;
-}
-
-.Select-value-label,
-.Select-placeholder {
-    color: #e0e0e0 !important;
-}
-
-.Select-input > input {
-    color: #e0e0e0 !important;
-}
-
-.Select-menu-outer {
-    background-color: #1e1e2f !important;
-    border: 1px solid #3a3a5c !important;
-    border-radius: 10px !important;
-    color: #e0e0e0 !important;
-    z-index: 100;
-}
-
-.VirtualizedSelectOption {
-    background-color: #1e1e2f !important;
-    color: #e0e0e0 !important;
-}
-
-.VirtualizedSelectOption:hover,
-.VirtualizedSelectFocusedOption {
-    background-color: #2a2a4a !important;
-    color: #fff !important;
-}
-
-/* ============================================================
    <details> / <summary> dark styling
    ============================================================ */
 details {
