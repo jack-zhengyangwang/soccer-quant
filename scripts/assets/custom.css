@@ -1,0 +1,490 @@
+/* Dark-theme overrides for Dash 4.0 components + global font */
+
+body {
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    background: #0f1117;
+    margin: 0;
+}
+
+/* ============================================================
+   Dash 4.0 Dropdown — dark theme
+   ============================================================ */
+
+/* Wrapper */
+.dash-dropdown {
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    font-size: 0.95em;
+}
+
+/* Trigger button (the closed dropdown) */
+.dash-dropdown-trigger {
+    background: #1e1e2f !important;
+    border: 1px solid #3a3a5c !important;
+    border-radius: 10px !important;
+    color: #e0e0e0 !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.dash-dropdown-trigger:hover {
+    border-color: #5a5a8a !important;
+    box-shadow: 0 0 0 2px rgba(90, 90, 138, 0.25);
+}
+
+/* When open */
+.dash-dropdown [data-state='open'] .dash-dropdown-trigger,
+.dash-dropdown-trigger:focus-within {
+    border-color: #6c63ff !important;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* Selected value text */
+.dash-dropdown-value {
+    color: #f0f0f0 !important;
+    font-weight: 500;
+}
+
+/* Placeholder text */
+.dash-dropdown-placeholder {
+    color: #777 !important;
+}
+
+/* Trigger arrow icon */
+.dash-dropdown-trigger-icon {
+    color: #888 !important;
+    transition: transform 0.2s;
+}
+
+/* Search bar container — sticky at top of dropdown, centered with padding */
+.dash-dropdown-search-container {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 2 !important;
+    background: #1e1e2f !important;
+    padding: 10px 12px !important;
+    border: none !important;
+    border-bottom: 1px solid #2a2a4a !important;
+    box-shadow: none !important;
+    outline: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* Kill the grid-container border/outline that wraps the search area */
+.dash-dropdown-grid-container {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Search input inside dropdown */
+.dash-dropdown-search {
+    background: #151524 !important;
+    border: 1px solid #3a3a5c !important;
+    border-radius: 8px !important;
+    color: #e0e0e0 !important;
+    padding: 9px 12px !important;
+    font-size: 0.95em;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    caret-color: #6c63ff;
+}
+
+.dash-dropdown-search::placeholder {
+    color: #666 !important;
+}
+
+.dash-dropdown-search:focus {
+    border-color: #6c63ff !important;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.15);
+}
+
+/* Search icon — completely removed from flow */
+.dash-dropdown-search-icon {
+    display: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Nuke the grid layout — use block so the single search input auto-centers */
+.dash-dropdown-search-container,
+.dash-dropdown-grid-container.dash-dropdown-search-container {
+    display: block !important;
+    grid-template-columns: unset !important;
+}
+
+/* Options dropdown panel */
+.dash-dropdown-content {
+    background: #1e1e2f !important;
+    border: 1px solid #3a3a5c !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+    padding: 0 !important;
+    margin-top: 4px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Options list — scrolls independently beneath the sticky search */
+.dash-dropdown-options {
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a5c #1e1e2f;
+    padding: 4px 0 !important;
+}
+
+/* Individual option */
+.dash-dropdown-option {
+    color: #ccc !important;
+    padding: 9px 14px !important;
+    border-radius: 6px !important;
+    margin: 1px 6px !important;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.dash-dropdown-option:hover,
+.dash-dropdown-option[data-highlighted] {
+    background: #2a2a4a !important;
+    color: #fff !important;
+}
+
+/* Currently selected option */
+.dash-dropdown-option[data-state='checked'],
+.dash-dropdown-option[aria-selected='true'] {
+    background: rgba(108, 99, 255, 0.15) !important;
+    color: #a89fff !important;
+    font-weight: 600;
+}
+
+/* Clear button */
+.dash-dropdown-clear {
+    color: #666 !important;
+}
+
+.dash-dropdown-clear:hover {
+    color: #e74c3c !important;
+}
+
+/* Actions bar */
+.dash-dropdown-actions {
+    border-top: 1px solid #2a2a4a !important;
+}
+
+.dash-dropdown-action-button {
+    color: #888 !important;
+}
+
+.dash-dropdown-action-button:hover {
+    color: #6c63ff !important;
+}
+
+/* Multi-value chips */
+.dash-dropdown-value-item {
+    background: #2a2a4a !important;
+    color: #ddd !important;
+    border-radius: 6px !important;
+    border: 1px solid #3a3a5c !important;
+}
+
+/* ============================================================
+   Legacy react-select classes (fallback)
+   ============================================================ */
+.Select-control {
+    background-color: #1e1e2f !important;
+    border: 1px solid #3a3a5c !important;
+    border-radius: 10px !important;
+    color: #e0e0e0 !important;
+}
+
+.Select-control:hover {
+    border-color: #5a5a8a !important;
+}
+
+.Select-value-label,
+.Select-placeholder {
+    color: #e0e0e0 !important;
+}
+
+.Select-input > input {
+    color: #e0e0e0 !important;
+}
+
+.Select-menu-outer {
+    background-color: #1e1e2f !important;
+    border: 1px solid #3a3a5c !important;
+    border-radius: 10px !important;
+    color: #e0e0e0 !important;
+    z-index: 100;
+}
+
+.VirtualizedSelectOption {
+    background-color: #1e1e2f !important;
+    color: #e0e0e0 !important;
+}
+
+.VirtualizedSelectOption:hover,
+.VirtualizedSelectFocusedOption {
+    background-color: #2a2a4a !important;
+    color: #fff !important;
+}
+
+/* ============================================================
+   <details> / <summary> dark styling
+   ============================================================ */
+details {
+    color: #bbb;
+}
+
+details summary {
+    color: #aaa;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95em;
+    padding: 6px 0;
+    outline: none;
+}
+
+details summary:hover {
+    color: #ddd;
+}
+
+details[open] summary {
+    color: #ccc;
+}
+
+/* ============================================================
+   GitHub link hover
+   ============================================================ */
+.github-link:hover {
+    border-color: #aaa !important;
+    color: #fff !important;
+}
+
+/* ============================================================
+   Fixture row styles (landing page)
+   ============================================================ */
+.fixture-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    margin-bottom: 2px;
+    background: #1a1a2e;
+    border-radius: 8px;
+    transition: background 0.15s, transform 0.1s;
+    cursor: pointer;
+    gap: 8px;
+}
+
+.fixture-row:hover {
+    background: #242445;
+    transform: translateX(3px);
+}
+
+.fixture-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.fixture-time {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   Date picker dark theme
+   ============================================================ */
+.DateInput_input {
+    background: #1e1e2f !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #3a3a5c !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 0.9em;
+}
+
+.DateInput_input::placeholder {
+    color: #666 !important;
+}
+
+.SingleDatePicker,
+.SingleDatePickerInput {
+    background: transparent !important;
+}
+
+.SingleDatePickerInput__withBorder {
+    border: none !important;
+    background: transparent !important;
+}
+
+.DateInput {
+    background: transparent !important;
+}
+
+.CalendarDay__default {
+    background: #1e1e2f !important;
+    color: #ccc !important;
+    border: 1px solid #2a2a4a !important;
+}
+
+.CalendarDay__default:hover {
+    background: #2a2a4a !important;
+    color: #fff !important;
+}
+
+.CalendarDay__selected {
+    background: #6c63ff !important;
+    color: #fff !important;
+}
+
+.CalendarMonth {
+    background: #1e1e2f !important;
+}
+
+.CalendarMonthGrid {
+    background: #1e1e2f !important;
+}
+
+.DayPicker {
+    background: #1e1e2f !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 10px !important;
+}
+
+.DayPickerNavigation_button__default {
+    border: 1px solid #3a3a5c !important;
+    background: #1e1e2f !important;
+}
+
+.DayPickerNavigation_svg__horizontal {
+    fill: #888 !important;
+}
+
+.CalendarMonth_caption {
+    color: #ccc !important;
+}
+
+.DayPicker_weekHeader_li small {
+    color: #888 !important;
+}
+
+/* Clear button for date picker */
+.SingleDatePickerInput_clearDate {
+    background: transparent !important;
+    color: #888 !important;
+}
+
+.SingleDatePickerInput_clearDate:hover {
+    background: rgba(231, 76, 60, 0.15) !important;
+    color: #e74c3c !important;
+}
+
+/* ============================================================
+   Match detail two-column layout
+   ============================================================ */
+.detail-top-row {
+    display: flex;
+    gap: 16px;
+    padding: 0 32px 24px;
+}
+
+.detail-left,
+.detail-right {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ============================================================
+   Insights panel
+   ============================================================ */
+.insights-panel {
+    background: #1e1e2f;
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.insights-panel ul {
+    list-style-type: "\2022  ";
+}
+
+.insights-panel li::marker {
+    color: #6c63ff;
+}
+
+/* ============================================================
+   Form badges
+   ============================================================ */
+.form-badge {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.8em;
+}
+
+/* ============================================================
+   Probability bar
+   ============================================================ */
+.prob-bar {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.prob-segment {
+    transition: flex 0.3s ease, filter 0.15s;
+}
+
+.prob-segment:hover {
+    filter: brightness(1.2);
+}
+
+.over-pill {
+    transition: border-color 0.2s;
+}
+
+.over-pill:hover {
+    border-color: #3498db !important;
+}
+
+/* ============================================================
+   Back link
+   ============================================================ */
+.back-link {
+    transition: opacity 0.15s;
+}
+
+.back-link:hover {
+    opacity: 0.8;
+}
+
+/* ============================================================
+   Responsive: stack columns on narrow screens
+   ============================================================ */
+@media (max-width: 768px) {
+    .detail-top-row {
+        flex-direction: column;
+    }
+    .fixture-row {
+        font-size: 0.85em;
+        padding: 10px 12px;
+    }
+    .fixture-home,
+    .fixture-away {
+        font-size: 0.9em;
+    }
+    .fixture-tip {
+        display: none;
+    }
+}
