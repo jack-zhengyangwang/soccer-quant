@@ -66,20 +66,37 @@ def make_header(subtitle="Fixture Calendar"):
             )],
             style={"margin": "0", "padding": "24px 40px", "color": "#fff"},
         ),
-        html.A(
-            "GitHub",
-            href="https://github.com/jack-zhengyangwang/soccer-quant",
-            target="_blank",
-            className="github-link",
-            style={
-                "position": "absolute", "right": "40px", "top": "50%",
-                "transform": "translateY(-50%)",
-                "color": "#ccc", "textDecoration": "none",
-                "fontSize": "0.9em", "fontWeight": "500",
-                "border": "1px solid #555", "borderRadius": "6px",
-                "padding": "6px 14px", "transition": "border-color 0.2s",
-            },
-        ),
+        html.Div([
+            dcc.Link(
+                html.Span("\u2699", style={"fontSize": "1.2em"}),
+                href="/profile",
+                className="profile-link",
+                style={
+                    "color": "#ccc", "textDecoration": "none",
+                    "fontSize": "0.9em", "fontWeight": "500",
+                    "border": "1px solid #555", "borderRadius": "6px",
+                    "padding": "6px 12px", "transition": "border-color 0.2s",
+                    "display": "inline-flex", "alignItems": "center",
+                    "gap": "6px",
+                },
+            ),
+            html.A(
+                "GitHub",
+                href="https://github.com/jack-zhengyangwang/soccer-quant",
+                target="_blank",
+                className="github-link",
+                style={
+                    "color": "#ccc", "textDecoration": "none",
+                    "fontSize": "0.9em", "fontWeight": "500",
+                    "border": "1px solid #555", "borderRadius": "6px",
+                    "padding": "6px 14px", "transition": "border-color 0.2s",
+                },
+            ),
+        ], style={
+            "position": "absolute", "right": "40px", "top": "50%",
+            "transform": "translateY(-50%)",
+            "display": "flex", "gap": "10px", "alignItems": "center",
+        }),
     ], style={
         "background": "linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)",
         "marginBottom": "32px", "boxShadow": "0 2px 12px rgba(0,0,0,0.5)",

@@ -1,8 +1,9 @@
-"""Soccer Quant — Fixture Calendar + Match Detail (two-page dashboard).
+"""Soccer Quant — Fixture Calendar + Match Detail + User Profile (multi-page dashboard).
 
 Routes:
     /                              → Landing page (fixture calendar)
     /match?home=Arsenal&away=Chelsea → Match detail page
+    /profile                       → User profile (login / register / settings)
 """
 
 import os
@@ -12,7 +13,7 @@ import webbrowser
 from datetime import datetime, timezone
 from urllib.parse import parse_qs
 
-from dash import Dash, Input, Output, callback, dcc, html
+from dash import Dash, Input, Output, State, callback, ctx, dcc, html, ALL
 
 from data import (
     generate_insights,
@@ -32,6 +33,8 @@ from components import (
     make_stat_glossary,
 )
 from qualitative import get_match_news, get_news_highlights
+from auth import register_user, login_user, get_user, update_user
+from user_profile import login_layout, profile_layout
 
 # ---------------------------------------------------------------------------
 # Dash app
@@ -39,9 +42,11 @@ from qualitative import get_match_news, get_news_highlights
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 app.title = "Soccer Quant"
+server = app.server  # WSGI entry point for gunicorn
 
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
+    dcc.Store(id="user-session", storage_type="session"),
     html.Div(id="page-content"),
 ], style={
     "fontFamily": "'Inter', 'Segoe UI', Arial, sans-serif",
@@ -347,8 +352,9 @@ def match_detail_layout(home_team, away_team):
     Output("page-content", "children"),
     Input("url", "pathname"),
     Input("url", "search"),
+    State("user-session", "data"),
 )
-def display_page(pathname, search):
+def display_page(pathname, search, session):
     """Route to the correct page based on URL."""
     if pathname == "/match":
         params = parse_qs(search.lstrip("?")) if search else {}
@@ -357,6 +363,12 @@ def display_page(pathname, search):
         if home and away:
             return match_detail_layout(home, away)
         return landing_layout()
+    if pathname == "/profile":
+        if session and session.get("email"):
+            user = get_user(session["email"])
+            if user:
+                return html.Div([make_header("Profile"), profile_layout(user)])
+        return html.Div([make_header("Profile"), login_layout()])
     return landing_layout()
 
 
@@ -404,6 +416,91 @@ def update_fixture_table(selected_gw, selected_date):
         rows.append(make_fixture_row(fix, pred))
 
     return html.Div(rows, className="fixture-list")
+
+
+# ---------------------------------------------------------------------------
+# Profile callbacks
+# ---------------------------------------------------------------------------
+
+
+@callback(
+    Output("user-session", "data", allow_duplicate=True),
+    Output("auth-error", "children"),
+    Output("url", "pathname", allow_duplicate=True),
+    Input("btn-login", "n_clicks"),
+    Input("btn-register", "n_clicks"),
+    State("auth-email", "value"),
+    State("auth-password", "value"),
+    State("user-session", "data"),
+    prevent_initial_call=True,
+)
+def handle_auth(login_clicks, register_clicks, email, password, session):
+    """Handle Sign In and Register button clicks."""
+    trigger = ctx.triggered_id
+    if trigger not in ("btn-login", "btn-register"):
+        return session, "", "/profile"
+    if not email or not password:
+        return session, "Please enter both email and password.", "/profile"
+
+    if trigger == "btn-register":
+        result = register_user(email, password)
+        if isinstance(result, str):
+            return session, result, "/profile"
+        return {"email": result["email"]}, "", "/profile"
+
+    # Login
+    user = login_user(email, password)
+    if user is None:
+        return session, "Invalid email or password.", "/profile"
+    return {"email": user["email"]}, "", "/profile"
+
+
+@callback(
+    Output("save-teams-msg", "children"),
+    Output("fav-team-links", "children"),
+    Input("btn-save-teams", "n_clicks"),
+    State("fav-teams-dropdown", "value"),
+    State("user-session", "data"),
+    prevent_initial_call=True,
+)
+def save_favorite_teams(n_clicks, teams, session):
+    """Persist selected favorite teams."""
+    if not session or not session.get("email"):
+        return "", []
+    teams = teams or []
+    update_user(session["email"], {"favorite_teams": teams})
+    from user_profile import _fav_links
+    return "Saved!", _fav_links(teams)
+
+
+@callback(
+    Output("tier-msg", "children"),
+    Output("url", "pathname", allow_duplicate=True),
+    Input({"type": "btn-tier", "tier": ALL}, "n_clicks"),
+    State("user-session", "data"),
+    prevent_initial_call=True,
+)
+def change_tier(n_clicks_list, session):
+    """Update the user's subscription tier."""
+    if not session or not session.get("email"):
+        return "", "/profile"
+    triggered = ctx.triggered_id
+    if triggered is None:
+        return "", "/profile"
+    tier = triggered["tier"]
+    update_user(session["email"], {"subscription": tier})
+    return f"Switched to {tier.title()}!", "/profile"
+
+
+@callback(
+    Output("user-session", "data", allow_duplicate=True),
+    Output("url", "pathname", allow_duplicate=True),
+    Input("btn-signout", "n_clicks"),
+    prevent_initial_call=True,
+)
+def sign_out(n_clicks):
+    """Clear the session and redirect to login form."""
+    return None, "/profile"
 
 
 # ---------------------------------------------------------------------------

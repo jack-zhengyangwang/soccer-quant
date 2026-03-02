@@ -2,8 +2,10 @@ __pycache__/
 *.pyc
 .DS_Store
 data/*.csv
+!data/features.csv
 models/*.pkl
 models/*.joblib
 .env
 *.sqlite
 data/news_cache/
+data/users/

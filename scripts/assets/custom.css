@@ -487,6 +487,102 @@ details[open] summary {
 }
 
 /* ============================================================
+   Profile link in header
+   ============================================================ */
+.profile-link:hover {
+    border-color: #aaa !important;
+    color: #fff !important;
+}
+
+/* ============================================================
+   Auth form
+   ============================================================ */
+.auth-card {
+    animation: fadeSlideIn 0.3s ease;
+}
+
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.auth-input:focus {
+    border-color: #6c63ff !important;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.15);
+}
+
+.auth-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    font-family: inherit;
+}
+
+.auth-btn:active {
+    transform: scale(0.97);
+}
+
+.auth-btn-primary {
+    background: #6c63ff;
+    color: #fff;
+}
+
+.auth-btn-primary:hover {
+    background: #5a52e0;
+}
+
+.auth-btn-secondary {
+    background: #2a2a4a;
+    color: #ccc;
+}
+
+.auth-btn-secondary:hover {
+    background: #3a3a5c;
+    color: #fff;
+}
+
+.auth-btn-danger {
+    background: transparent;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.auth-btn-danger:hover {
+    background: rgba(231, 76, 60, 0.12);
+}
+
+/* ============================================================
+   Profile sections
+   ============================================================ */
+.profile-section {
+    animation: fadeSlideIn 0.3s ease;
+}
+
+/* ============================================================
+   Subscription tier cards
+   ============================================================ */
+.tier-card {
+    transition: border-color 0.2s, transform 0.15s;
+}
+
+.tier-card:hover {
+    transform: translateY(-2px);
+}
+
+.tier-card ul {
+    list-style-type: "\2713  ";
+}
+
+.tier-card li::marker {
+    color: #6c63ff;
+}
+
+/* ============================================================
    Responsive: stack columns on narrow screens
    ============================================================ */
 @media (max-width: 768px) {
@@ -503,5 +599,8 @@ details[open] summary {
     }
     .fixture-tip {
         display: none;
+    }
+    .tier-row {
+        flex-direction: column !important;
     }
 }
